@@ -36,11 +36,10 @@
       {#if !data.session}
         <div class="flex flex-row gap-2 items-center">
           <Darkmode />
-          <Button
-            on:click={() => {
-              goto("/login", { replaceState: true, invalidateAll: true });
-            }}
-            variant="blue">Login</Button
+          <a
+            href="/login"
+            class="inline-flex items-center justify-center text-sm font-medium whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-600 hover:bg-blue-600/90 text-white h-10 px-4 py-2 w-fit rounded-md"
+            >Login</a
           >
         </div>
       {:else}
