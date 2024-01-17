@@ -4,9 +4,10 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import { goto } from "$app/navigation";
   import Input from "$lib/components/ui/input/input.svelte";
-  import { Loader2 } from "lucide-svelte";
+  import { Loader2, UserIcon } from "lucide-svelte";
   import { signIn } from "@auth/sveltekit/client";
   let isLoading = false;
+  let loading = false;
   let email = "";
 
   const refreshPage = () => {
@@ -120,6 +121,47 @@
                 >
               </div>
             </div>
+            {#if loading}
+              <Button
+                disabled={loading}
+                type="submit"
+                size="sm"
+              >
+                <Loader2 class="animate-spin" />
+              </Button>
+            {:else}
+              <Button
+                variant="outline"
+                disabled={loading}
+                size="sm"
+                on:click={async () => {
+                  loading = true;
+                  await signIn("credentials", {
+                    email: "sulton@gmail.com",
+                    redirect: false,
+                  })
+                    .then(async (callback) => {
+                      if (callback?.ok) {
+                        refreshPage();
+                      } else {
+                        console.log("error");
+                      }
+                    })
+                    .catch(() => {
+                      console.log("error");
+                    })
+                    .finally(() => {
+                      isLoading = false;
+                    });
+                }}
+              >
+                <UserIcon
+                  size="15"
+                  class="mr-2"
+                />
+                Try demo account
+              </Button>
+            {/if}
             <Button
               variant="outline"
               on:click={() =>
