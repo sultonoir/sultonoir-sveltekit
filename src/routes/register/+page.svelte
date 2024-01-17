@@ -2,15 +2,39 @@
   import shape from "$lib/assets/shape1.png?enhanced";
   import rocket from "$lib/assets/bg34-1.png?enhanced";
   import Button from "$lib/components/ui/button/button.svelte";
-  import { enhance } from "$app/forms";
-  import { goto } from "$app/navigation";
-  import Input from "$lib/components/ui/input/input.svelte";
   import { Loader2, UserIcon } from "lucide-svelte";
   import { signIn } from "@auth/sveltekit/client";
-  let isLoading = false;
-  let message: string | undefined = "";
+  import * as Form from "$lib/components/ui/form";
+  import type { SuperValidated } from "sveltekit-superforms";
+  import type { PageData } from "./$types";
+  import { RegisterSchema } from "$lib/schema";
+  import { superForm } from "sveltekit-superforms/client";
+  import { goto } from "$app/navigation";
+  export let data: PageData;
+  let form: SuperValidated<RegisterSchema> = data?.form;
   let loading = false;
+  const { delayed } = superForm(data.form, {
+    delayMs: 500,
+    timeoutMs: 8000,
+    applyAction: false,
+    onResult({ result }) {
+      if (result.type === "failure") {
+        console.log("error");
+      }
+      if (result.type === "redirect") {
+        goto(result.location);
+      }
+    },
+  });
 </script>
+
+<svelte:head>
+  <title>Register</title>
+  <meta
+    name="description"
+    content="Register for sultonoir"
+  />
+</svelte:head>
 
 <main class="container">
   <section
@@ -56,75 +80,39 @@
             </div>
           </div>
           <div class="grid gap-6">
-            <form
+            <Form.Root
               method="POST"
-              action="?/create"
-              use:enhance={() => {
-                isLoading = true;
-                return async ({ result }) => {
-                  if (result.type === "error") {
-                    message = "Email has been used";
-                    isLoading = false;
-                  }
-                  if (result.type === "failure") {
-                    message = "email is require";
-                    isLoading = false;
-                  }
-                  if (result.type === "redirect") {
-                    isLoading = false;
-                    goto(result.location);
-                  }
-                };
-              }}
+              {form}
+              schema={RegisterSchema}
+              let:config
             >
-              {#if message !== ""}
-                <p class="text-destructive">{message}</p>
-              {/if}
-              <div class="grid gap-2">
-                <div class="grid gap-1">
-                  <label
-                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 sr-only"
-                    for="email">Full name</label
-                  ><Input
-                    type="text"
-                    name="name"
-                    id="name"
-                    placeholder="full name"
-                    autocapitalize="none"
-                    autocorrect="off"
-                  />
-                </div>
-                <div class="grid gap-1">
-                  <label
-                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 sr-only"
-                    for="email">Email</label
-                  ><Input
-                    type="email"
-                    name="email"
-                    id="email"
-                    placeholder="name@example.com"
-                    autocapitalize="none"
-                    autocomplete="email"
-                    autocorrect="off"
-                  />
-                </div>
-                {#if isLoading}
-                  <Button
-                    disabled={isLoading}
-                    type="submit"
-                    size="sm"
-                  >
-                    <Loader2 class="animate-spin" />
-                  </Button>
-                {:else}
-                  <Button
-                    disabled={isLoading}
-                    type="submit"
-                    size="sm">Register with Email</Button
-                  >
-                {/if}
-              </div>
-            </form>
+              <Form.Field
+                {config}
+                name="name"
+              >
+                <Form.Item>
+                  <Form.Label>Name</Form.Label>
+                  <Form.Input placeholder="Full name" />
+                  <Form.Validation />
+                </Form.Item>
+              </Form.Field>
+              <Form.Field
+                {config}
+                name="email"
+              >
+                <Form.Item>
+                  <Form.Label>Email</Form.Label>
+                  <Form.Input placeholder="exaple@name.com" />
+                  <Form.Validation />
+                </Form.Item>
+              </Form.Field>
+              <Form.Button
+                size="sm"
+                disabled={$delayed}
+                variant="blue"
+                class="w-full">Submit</Form.Button
+              >
+            </Form.Root>
             <div class="relative">
               <div class="absolute inset-0 flex items-center">
                 <span class="w-full border-t"></span>

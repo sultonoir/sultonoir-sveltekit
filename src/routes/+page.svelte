@@ -1,10 +1,12 @@
 <script lang="ts">
   import hero from "$lib/assets/hero (1).png?enhanced";
+  import Seo from "$lib/seo/seo.svelte";
 </script>
 
+<Seo props={{ title: "Sultonoir" }} />
 <div class="container">
   <div
-    class="md:bg-slate-50 dark:bg-background bg-contain py-5 md:py-10"
+    class="dark:bg-background bg-contain py-5 md:py-10"
     style="background-image: url(../../src/lib/assets/dotted-pattern.png);"
   >
     <div class="wrapper grid grid-cols-1 gap-5 md:grid-cols-2 2xl:gap-0">

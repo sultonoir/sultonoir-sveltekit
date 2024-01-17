@@ -8,19 +8,10 @@
   import { ModeWatcher } from "mode-watcher";
   import Darkmode from "$lib/components/ui/darkmode/Darkmode.svelte";
   import Profile from "$lib/components/profile/Profile.svelte";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import { goto } from "$app/navigation";
+  import { Toaster } from "$lib/components/ui/sonner";
   const profile = data.session?.user;
   setContext("user", profile);
 </script>
-
-<svelte:head>
-  <title>Sultonoir</title>
-  <meta
-    name="description"
-    content="personal fortpolio made by sultonoir"
-  />
-</svelte:head>
 
 <nav class="sticky top-0 backdrop-blur-sm border-b bg-background/70">
   <div class="container">
@@ -51,6 +42,7 @@
     </div>
   </div>
 </nav>
+<Toaster />
 
 <ModeWatcher />
 <slot />
