@@ -1,54 +1,57 @@
-<script>
-	import "../app.pcss";
-    import Header from './Header.svelte';
-    import './styles.css';
+<script lang="ts">
+  import "../app.pcss";
+  import "./styles.css";
+  import { setContext } from "svelte";
+  import type { LayoutData } from "./$types";
+  import Logo from "$lib/assets/logo-transparent.png?enhanced";
+  export let data: LayoutData;
+  import { ModeWatcher } from "mode-watcher";
+  import Darkmode from "$lib/components/ui/darkmode/Darkmode.svelte";
+  import Profile from "$lib/components/profile/Profile.svelte";
+  import Button from "$lib/components/ui/button/button.svelte";
+  import { goto } from "$app/navigation";
+  const profile = data.session?.user;
+  setContext("user", profile);
 </script>
 
-<div class="app">
-	<Header></Header>
+<svelte:head>
+  <title>Sultonoir</title>
+  <meta
+    name="description"
+    content="personal fortpolio made by sultonoir"
+  />
+</svelte:head>
 
-	<main>
-		<slot></slot>
-	</main>
+<nav class="sticky top-0 backdrop-blur-sm border-b bg-background/70">
+  <div class="container">
+    <div class="flex items-center justify-between py-2">
+      <a href="/">
+        <enhanced:img
+          src={Logo}
+          sizes="min(1280px, 100dvw)"
+          alt="logo"
+          class="w-10"
+        />
+      </a>
+      {#if !data.session}
+        <div class="flex flex-row gap-2 items-center">
+          <Darkmode />
+          <Button
+            on:click={() => {
+              goto("/login", { replaceState: true, invalidateAll: true });
+            }}
+            variant="blue">Login</Button
+          >
+        </div>
+      {:else}
+        <div class="flex flex-row gap-2 items-center">
+          <Darkmode />
+          <Profile />
+        </div>
+      {/if}
+    </div>
+  </div>
+</nav>
 
-	<footer>
-		<p>visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
-	</footer>
-</div>
-
-<style>
-	.app {
-		display: flex;
-		flex-direction: column;
-		min-height: 100vh;
-	}
-
-	main {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		padding: 1rem;
-		width: 100%;
-		max-width: 64rem;
-		margin: 0 auto;
-		box-sizing: border-box;
-	}
-
-	footer {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		padding: 12px;
-	}
-
-	footer a {
-		font-weight: bold;
-	}
-
-	@media (min-width: 480px) {
-		footer {
-			padding: 12px 0;
-		}
-	}
-</style>
+<ModeWatcher />
+<slot />
